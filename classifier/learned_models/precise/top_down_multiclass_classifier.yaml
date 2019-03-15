@@ -1,0 +1,18 @@
+%YAML:1.0
+numClassifier: 16
+classifier_0: "0_top_down_classifier_optimized.yaml"
+classifier_1: "22_top_down_classifier_optimized.yaml"
+classifier_2: "45_top_down_classifier_optimized.yaml"
+classifier_3: "67_top_down_classifier_optimized.yaml"
+classifier_4: "90_top_down_classifier_optimized.yaml"
+classifier_5: "112_top_down_classifier_optimized.yaml"
+classifier_6: "135_top_down_classifier_optimized.yaml"
+classifier_7: "157_top_down_classifier_optimized.yaml"
+classifier_8: "180_top_down_classifier_optimized.yaml"
+classifier_9: "202_top_down_classifier_optimized.yaml"
+classifier_10: "225_top_down_classifier_optimized.yaml"
+classifier_11: "247_top_down_classifier_optimized.yaml"
+classifier_12: "270_top_down_classifier_optimized.yaml"
+classifier_13: "292_top_down_classifier_optimized.yaml"
+classifier_14: "315_top_down_classifier_optimized.yaml"
+classifier_15: "337_top_down_classifier_optimized.yaml"

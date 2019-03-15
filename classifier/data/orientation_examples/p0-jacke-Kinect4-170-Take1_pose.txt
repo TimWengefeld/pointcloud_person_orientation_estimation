@@ -1,0 +1,6 @@
+position_x	2.0
+position_y	0.0
+velocity_x	0
+velocity_y	0
+theta_deg 107.0
+sensor_distance	2.0

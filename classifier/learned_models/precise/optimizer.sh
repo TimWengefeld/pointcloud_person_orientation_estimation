@@ -1,0 +1,16 @@
+python optimize_classifier_model.py 0_top_down_classifier.yaml
+python optimize_classifier_model.py 22_top_down_classifier.yaml
+python optimize_classifier_model.py 45_top_down_classifier.yaml
+python optimize_classifier_model.py 67_top_down_classifier.yaml
+python optimize_classifier_model.py 90_top_down_classifier.yaml
+python optimize_classifier_model.py 112_top_down_classifier.yaml
+python optimize_classifier_model.py 135_top_down_classifier.yaml
+python optimize_classifier_model.py 157_top_down_classifier.yaml
+python optimize_classifier_model.py 180_top_down_classifier.yaml
+python optimize_classifier_model.py 202_top_down_classifier.yaml
+python optimize_classifier_model.py 225_top_down_classifier.yaml
+python optimize_classifier_model.py 247_top_down_classifier.yaml
+python optimize_classifier_model.py 270_top_down_classifier.yaml
+python optimize_classifier_model.py 292_top_down_classifier.yaml
+python optimize_classifier_model.py 315_top_down_classifier.yaml
+python optimize_classifier_model.py 337_top_down_classifier.yaml

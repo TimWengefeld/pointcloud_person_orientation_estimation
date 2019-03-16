@@ -19,7 +19,7 @@ and
 > IEEE International Conference on Robotics and Automation (ICRA'11), Shanghai, China, 2011.  
 
 The original attribute estimation is still included and running, but we made several changes on the code, most notably the following:
-* Ported the code to more recent OS and ROS versions (actually i can't remember if there were any changes necessary, but at least we tested it :)
+* Ported the code to more recent OS and ROS versions
 * removed the (not used) HOG based attribute estimation since it won't build on a the new OS version and we don't care about it
 * Fixed code and enabled C++11 support for convenience
 * Added a node to pre-calculate features for every point cloud file (will speed up the training and testing of different model parameters)

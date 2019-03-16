@@ -24,9 +24,13 @@ The original attribute estimation is still included and running, but we made sev
 * Fixed code and enabled C++11 support for convenience
 * Added a node to pre-calculate features for every point cloud file (will speed up the training and testing of different model parameters)
 
-TODO:
+##### TODO: #####
 * Port the code to OpenCV 3 (the project will link against the OpenCV 2 from the system while ROS is based on the OpenCV 3, from my experiences with other middleware frameworks this might causes problems in larger applications)
 * re-add  the HOG based attribute estimation (maybe) 
+
+##### Attention: #####
+Please keep in mind that I am not a ROS expert since I am typically developing with the robotic Middleware MIRA `http://www.mira-project.org/`.
+So please expect this code as a pretty example which was never tested in a larger application.
 
 ### Installation and setup ###
 This package has been tested on Ubuntu Trusty 16.04 LTS (64-Bit) and Mint 18.3 (Sylvia) both with ROS Kinetic.

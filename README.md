@@ -1,7 +1,7 @@
 ## Real Time Person Orientation Estimation using Colored Pointclouds ##
 ![Repo_Eyecatcher](/classifier/misc/Repo_eyecatcher.png?raw=true "Repo_Eyecatcher")
 
-#### Installation and setup ####
+### Installation and setup ###
 This package has been tested on Ubuntu Trusty 16.04 LTS (64-Bit) and Mint 18.3 (Sylvia) both with ROS Kinetic.
 
 The following steps describe the installation procedure on a clean ubuntu 16.04.
@@ -38,6 +38,6 @@ Build the code:
     catkin_make -DCMAKE_BUILD_TYPE=RelWithDebInfo
     source devel/setup.bash
 
-#### Try the examples ####
+### Try the examples ###
 
 By executing `sh src/pointcloud_person_orientation_estimation/classifier/scripts/orientation_example.sh` you will receive some outputs like: 

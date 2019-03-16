@@ -37,3 +37,7 @@ Build the code:
 
     catkin_make -DCMAKE_BUILD_TYPE=RelWithDebInfo
     source devel/setup.bash
+
+#### Try the examples ####
+
+By executing `sh src/pointcloud_person_orientation_estimation/classifier/scripts/orientation_example.sh` you will receive some outputs like: 

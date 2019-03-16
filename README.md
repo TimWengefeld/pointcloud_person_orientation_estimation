@@ -1,6 +1,33 @@
 ## Real Time Person Orientation Estimation using Colored Pointclouds ##
 ![Repo_Eyecatcher](/classifier/misc/Repo_eyecatcher.png?raw=true "Repo_Eyecatcher")
 
+### Introduction ###
+
+This repository contains a ROS-based C++ / Python implementation of the classification and regression approach to estimate the upper body orientation of a person described in the paper:
+> *Real Time Person Orientation Estimation using Colored Pointcloud*  
+
+This approach is based on the repo from `https://github.com/spencer-project/spencer_human_attribute_recognition` described in the papers:
+
+> *Real-Time Full-Body Human Attribute Classification in RGB-D Using a Tessellation Boosting Approach*  
+> by Timm Linder and Kai O. Arras   
+> IEEE/RSJ Int. Conference on Intelligent Robots and Systems (IROS), Hamburg, Germany, 2015.
+
+and
+
+> *Tracking People in 3D Using a Bottom-Up Top-Down Detector*  
+> by Luciano Spinello, Matthias Luber, Kai O. Arras    
+> IEEE International Conference on Robotics and Automation (ICRA'11), Shanghai, China, 2011.  
+
+The original attribute estimation is still included and running, but we made several changes on the code, most notably the following:
+* Ported the code to more recent OS and ROS versions (actually i can't remember if there were any changes necessary, but at least we tested it :)
+* removed the (not used) HOG based attribute estimation since it won't build on a the new OS version and we don't care about it
+* Enabled C++11 support for convenience
+* Added a node to pre-calculate features for every point cloud file (will speed up the training and testing of different model parameters)
+
+TODO:
+* Port the code to OpenCV 3 (the project will link against the OpenCV 2 from the system while ROS is based on the OpenCV 3, from my experiences with other middleware frameworks this might causes problems in larger applications)
+* re-add  the HOG based attribute estimation (maybe) 
+
 ### Installation and setup ###
 This package has been tested on Ubuntu Trusty 16.04 LTS (64-Bit) and Mint 18.3 (Sylvia) both with ROS Kinetic.
 

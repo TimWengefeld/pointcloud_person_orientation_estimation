@@ -32,6 +32,7 @@
 #include <ros/package.h>
 #include <sensor_msgs/PointCloud2.h>
 #include <geometry_msgs/PoseStamped.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
 #include <pcl_ros/point_cloud.h>
 #include <pcl/io/pcd_io.h>
@@ -68,6 +69,7 @@ using namespace std;
 
 // Global variables
 ros::Publisher g_pointCloudPublisher;
+ros::Publisher g_posePublisher;
 std::vector<boost::shared_ptr<TopDownClassifier> > g_multiclass_classifier;
 
 // Signal-safe flag for whether shutdown is requested
@@ -176,11 +178,21 @@ string estimateOrientations(const std::string& cloudFilename)
 
     std::cout << "Estimation process without loading from disk took " << endl;
     std::cout << durationFeatures.count() << " ms for feature extraction" << endl;
-    std::cout << durationClassify.count() << " ms for calssification" << endl;
+    std::cout << durationClassify.count() << " ms for classification" << endl;
 
+    tf2::Quaternion myQuaternion;
+    myQuaternion.setRPY( 0, 0, (std::stof(maxLabel)+180) / 180.0 * M_PI );
     geometry_msgs::PoseStamped poseStamped;
-    poseStamped.header.frame_id="/frame_id_1";
+    poseStamped.header.frame_id="extracted_cloud_frame";
     poseStamped.header.stamp = ros::Time::now();
+    poseStamped.pose.position.x = 0;
+    poseStamped.pose.position.y = 0;
+    poseStamped.pose.position.z = 1.0;
+    poseStamped.pose.orientation.x = myQuaternion.getX();
+    poseStamped.pose.orientation.y = myQuaternion.getY();
+    poseStamped.pose.orientation.z = myQuaternion.getZ();
+    poseStamped.pose.orientation.w = myQuaternion.getW();
+    g_posePublisher.publish(poseStamped);
 
     return maxLabel;
 }
@@ -214,6 +226,7 @@ int main(int argc, char **argv)
     
     // Create point cloud publisher
     g_pointCloudPublisher = nodeHandle.advertise<sensor_msgs::PointCloud2>("cloud", 1, true);
+    g_posePublisher = nodeHandle.advertise<geometry_msgs::PoseStamped>("pose", 1, true);
     
     
     //

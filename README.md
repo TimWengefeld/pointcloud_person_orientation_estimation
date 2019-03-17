@@ -71,7 +71,7 @@ Build the code:
 
 ### Try the examples ###
 
-By executing `sh src/pointcloud_person_orientation_estimation/classifier/scripts/orientation_example_precise.sh` you will receive some outputs like: 
+By executing `sh src/pointcloud_person_orientation_estimation/classifier/scripts/orientation_example_precise.sh` a short sequence of example files will be processed cyclically. You will receive some outputs like: 
      
     Estimation process without loading from disk took 
     75.8541 ms for feature extraction

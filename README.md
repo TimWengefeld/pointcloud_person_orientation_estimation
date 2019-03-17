@@ -79,3 +79,4 @@ By executing `sh src/pointcloud_person_orientation_estimation/classifier/scripts
     estimated orientation : 202
     ground truth label was : 201
 
+![example](/classifier/misc/example.gif?raw=true "example")

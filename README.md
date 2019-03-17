@@ -71,4 +71,11 @@ Build the code:
 
 ### Try the examples ###
 
-By executing `sh src/pointcloud_person_orientation_estimation/classifier/scripts/orientation_example.sh` you will receive some outputs like: 
+By executing `sh src/pointcloud_person_orientation_estimation/classifier/scripts/orientation_example_precise.sh` you will receive some outputs like: 
+     
+    Estimation process without loading from disk took 
+    75.8541 ms for feature extraction
+    0.850131 ms for classification
+    estimated orientation : 202
+    ground truth label was : 201
+

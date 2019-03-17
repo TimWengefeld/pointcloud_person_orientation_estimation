@@ -79,4 +79,8 @@ By executing `sh src/pointcloud_person_orientation_estimation/classifier/scripts
     estimated orientation : 202
     ground truth label was : 201
 
+Open a new terminal and execute the following command will start a vizualization of the mentioned sequence.
+
+    roslaunch src/pointcloud_person_orientation_estimation/classifier/launch/orientation_visualization.launch
+
 ![example](/classifier/misc/example.gif?raw=true "example")

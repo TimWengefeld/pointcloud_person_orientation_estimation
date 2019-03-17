@@ -146,9 +146,13 @@ string estimateOrientations(const std::string& cloudFilename)
 	personCloud->header.stamp = ros::Time::now().toNSec() / 1000;
 	g_pointCloudPublisher.publish(personCloud);
 	ros::WallRate rate(25);
-	//for(int i = 0; i < 10; i++) { ros::spinOnce(); rate.sleep(); }
+
 	double maxPrediction = -std::numeric_limits<double>::infinity();
 	string maxLabel;
+
+    std::chrono::duration<double, milli> duration(0);
+    std::chrono::duration<double, milli> durationFeatures(0);
+    std::chrono::duration<double, milli> durationClassify(0);
 
     for(int i = 0; i < g_multiclass_classifier.size();i++)
 	{
@@ -160,8 +164,8 @@ string estimateOrientations(const std::string& cloudFilename)
 		double sumOfVotes;
 		g_multiclass_classifier[i]->classifyFeatureVector(featureVector,missingDataMask,&sumOfVotes); // invoke classifier
 		auto endClassify = std::chrono::high_resolution_clock::now();
-		//durationFeatures += endFeatures-startFeatures;
-		//durationClassify += endClassify-startClassify;
+		durationFeatures += endFeatures-startFeatures;
+		durationClassify += endClassify-startClassify;
 
 		if(sumOfVotes > maxPrediction)
 		{
@@ -169,6 +173,10 @@ string estimateOrientations(const std::string& cloudFilename)
 				maxLabel = g_multiclass_classifier[i]->getCategory();
 		}
 	}
+
+    std::cout << "Estimation process without loading from disk took " << endl;
+    std::cout << durationFeatures.count() << " ms for feature extraction" << endl;
+    std::cout << durationClassify.count() << " ms for calssification" << endl;
 
     geometry_msgs::PoseStamped poseStamped;
     poseStamped.header.frame_id="/frame_id_1";

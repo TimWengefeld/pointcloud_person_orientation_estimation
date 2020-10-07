@@ -188,6 +188,7 @@ void TopDownClassifier::init(const string& modelFilename)
     
     ROS_INFO("Reading feature vector entries...");
     cv::FileNode featureVectorEntries = fileStorage["feature_vector_entries"];
+    std::map<int,int> feature_vector_entries;
     for(cv::FileNodeIterator it = featureVectorEntries.begin(); it != featureVectorEntries.end(); ++it) {
         cv::FileNode featureVectorEntry = *it;
         int overallVolumeIndex = (int) featureVectorEntry["overallVolumeIndex"];
@@ -200,12 +201,25 @@ void TopDownClassifier::init(const string& modelFilename)
         volumeQuality.quality = splitQuality;
         volumeQuality.volumeIndex = overallVolumeIndex;
         volumeQualities.push_back(volumeQuality);
+        if(feature_vector_entries.find(featureVectorEntry["featureIndex"]) == feature_vector_entries.end())
+        {
+            feature_vector_entries[featureVectorEntry["featureIndex"]] = 1;
+        }
+        else
+        {
+            feature_vector_entries[featureVectorEntry["featureIndex"]]++;
+        }
+    }
+    for (auto entry : feature_vector_entries)
+    {
+        std::cout << "feature " << entry.first << " got selected " << entry.second << " times" << std::endl;
     }
 
     // Sort volume qualities by quality, then extract indices of best volumes
     std::stable_sort(volumeQualities.begin(), volumeQualities.end(), VolumeQualityComparator());
     foreach(const VolumeQuality& volumeQuality, volumeQualities) {
         m_bestVolumeIndices.push_back(volumeQuality.volumeIndex);
+        std::cout << "quality: " << volumeQuality.quality << " index: " << volumeQuality.volumeIndex << std::endl;
     }
 
     // Get number of minimum required points per volume

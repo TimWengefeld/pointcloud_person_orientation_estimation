@@ -143,10 +143,11 @@ int main(int argc, char **argv)
     // Parse arguments
     //
 
-    bool showBestTessellation; std::string listFilename, modelFilename; int numThreads, numberOfVolumesToShow;
+    bool showBestTessellation; std::string listFilename, modelFilename; int numThreads, numberOfVolumesToShow, firstVolumeToShow;
 
     privateHandle.param<bool>("show_best_tessellation", showBestTessellation, true);
     privateHandle.param<int>("num_volumes_to_show", numberOfVolumesToShow, 50);
+    privateHandle.param<int>("first_volumes_to_show", firstVolumeToShow, 0);
     privateHandle.param<std::string>("list_file", listFilename, "");
     privateHandle.param<std::string>("model", modelFilename, "");
     privateHandle.param<int>("num_threads", numThreads, 5);
@@ -177,18 +178,22 @@ int main(int argc, char **argv)
 
     VolumeVisualizer visualizer;
     visualizer.clear();
-    visualizer.visualize(g_classifier.getParentVolume(), 0, "Parent Volume", 0xffff00, 3.0f);
+    //visualizer.visualize(g_classifier.getParentVolume(), 0, "Parent Volume", 0xffff00, 3.0f);
 
     if(g_classifier.isOptimized())
     {
         // Show best tessellation
         const std::vector<Volume>& volumes = g_classifier.getVolumes();
         const std::vector<size_t>& bestVolumeIndices = g_classifier.getIndicesOfBestVolumes();
-        for(size_t i = 0; i < std::min((int)bestVolumeIndices.size(), numberOfVolumesToShow); i++) {
+        for(size_t i = 0; i < std::min((int)bestVolumeIndices.size(), numberOfVolumesToShow); i++) 
+        {
+            if(i < firstVolumeToShow)
+                continue;
             const size_t volumeIndex = bestVolumeIndices[i];
             const Volume& volume = volumes[volumeIndex];
             //ROS_INFO_STREAM("Volume: " << volume);
             visualizer.visualize(volume, 1+i, "Learned best tessellation"); 
+            std::cout << i << std::endl;
         }
         ROS_INFO_STREAM("" << volumes.size() + 1 << " volume(s) have been visualized!");
     }

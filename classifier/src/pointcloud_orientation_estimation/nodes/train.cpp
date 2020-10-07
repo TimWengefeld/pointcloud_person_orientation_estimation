@@ -250,6 +250,7 @@ void calculateFeaturesOnDataset(int fold, bool useValidationSet, std::list<Tesse
 
     std::stringstream trainFilename;
     trainFilename << ros::package::getPath(ROS_PACKAGE_NAME) << "/data/" << g_category << "/fold" << std::setw(3) << std::setfill('0') << fold << "/" << (useValidationSet ? "val" : "train") << ".txt";
+    std::cout << "read samples from file : " << trainFilename.str().c_str() << std::endl;
     std::ifstream listFile(trainFilename.str().c_str());
 
     string cloudFilename;

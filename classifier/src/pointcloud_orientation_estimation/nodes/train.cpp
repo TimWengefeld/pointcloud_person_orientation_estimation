@@ -264,57 +264,15 @@ void calculateFeaturesOnDataset(int fold, bool useValidationSet, std::list<Tesse
     for(size_t i = 0; i < numCommentLinesAtBeginning; i++) std::getline(listFile, commentString);
 
     // See how many cloud files we have
-    while (listFile >> cloudFilename >> label)
-    {
-        numClouds++;
-    }
-
-    // Go back to start of list file
-    listFile.clear();
-    listFile.seekg(0, std::ios::beg);
-    for(size_t i = 0; i < numCommentLinesAtBeginning; i++) std::getline(listFile, commentString);
-
-    // Initialize OpenCV matrices
-    labels.create(numClouds, 1, CV_32SC1);
-    labels.setTo(cv::Scalar(99999));
-
-    ROS_INFO("Allocating memory for feature matrix, total: %zu MB", ((numClouds * featureVectorSize * 4) / (1024 * 1024)));
-    features.create(numClouds, featureVectorSize, CV_32FC1);
-    features.setTo(cv::Scalar(std::numeric_limits<double>::quiet_NaN()));
+    std::vector<std::string> samples;
+    std::vector<int> labels_vec;
     
-    sampleIdx.create(numClouds, 1, CV_8UC1);
-    sampleIdx.setTo(cv::Scalar(0));
-
-    missingDataMask.create(numClouds, featureVectorSize, CV_8UC1);
-    missingDataMask.setTo(cv::Scalar(1));
-
-    // Clear other fields
-    g_numNegativeSamples = g_numPositiveSamples = 0;
     cloudFilenames.clear();
     cloudInfos.clear();
-
-    // Create map for looking up which column in the feature vector belongs to which tessellation + voxel + feature
-    overallVolumeLookup.clear();
-    overallVolumeLookup.reserve(overallVolumeCount);
-    featureVectorLookup.clear();
-    featureVectorLookup.reserve(featureVectorSize);
-    bool featureVectorLookupInitialized = false;
-
-
-    ROS_INFO_STREAM("Loading " << numClouds << " clouds to calculate features...");
-
-    // Now start calculating features
     size_t numSkippedLowQualityClouds = 0;
-    ros::WallRate rate(10);
-    int goodCloudCounter = 0, overallCloudCounter = 0;
-    while (listFile >> cloudFilename >> label && ros::ok())
+    
+    while (listFile >> cloudFilename >> label)
     {
-        // Show progress
-        overallCloudCounter++;
-        if(overallCloudCounter % (numClouds / 10) == 0) {
-            ROS_INFO("%d %% of feature computations done...", int(overallCloudCounter / (float)numClouds * 100.0f + 0.5f));
-        }
-
         // Load pose file
         std::string poseFilename = cloudFilename;
         boost::replace_all(poseFilename, "_cloud.pcd", "_pose.txt");
@@ -343,18 +301,77 @@ void calculateFeaturesOnDataset(int fold, bool useValidationSet, std::list<Tesse
                 continue;
             }      
         }
+        //cloudInfos.push_back(cloudInfo);
+        //cloudFilenames.push_back(cloudFilename);
+        
+        samples.push_back(cloudFilename);
+        labels_vec.push_back(label);
+        
+        numClouds++;
+    }
+
+    // Go back to start of list file
+    listFile.clear();
+    listFile.seekg(0, std::ios::beg);
+    for(size_t i = 0; i < numCommentLinesAtBeginning; i++) std::getline(listFile, commentString);
+
+    // Initialize OpenCV matrices
+    labels.create(numClouds, 1, CV_32SC1);
+    labels.setTo(cv::Scalar(99999));
+
+    ROS_INFO("Allocating memory for feature matrix, total: %zu MB", ((numClouds * featureVectorSize * 4) / (1024 * 1024)));
+    features.create(numClouds, featureVectorSize, CV_32FC1);
+    features.setTo(cv::Scalar(std::numeric_limits<double>::quiet_NaN()));
+    
+    //sampleIdx.create(numClouds, 1, CV_8UC1);
+    //sampleIdx.setTo(cv::Scalar(0));
+
+    //missingDataMask.create(numClouds, featureVectorSize, CV_8UC1);
+    //missingDataMask.setTo(cv::Scalar(1));
+
+    // Clear other fields
+    g_numNegativeSamples = g_numPositiveSamples = 0;
+
+
+    // Create map for looking up which column in the feature vector belongs to which tessellation + voxel + feature
+    overallVolumeLookup.clear();
+    overallVolumeLookup.reserve(overallVolumeCount);
+    featureVectorLookup.clear();
+    featureVectorLookup.reserve(featureVectorSize);
+    bool featureVectorLookupInitialized = false;
+
+
+    ROS_INFO_STREAM("Loading " << numClouds << " clouds to calculate features...");
+
+    // Now start calculating features
+
+    ros::WallRate rate(10);
+    int goodCloudCounter = 0, overallCloudCounter = 0;
+    for(uint i = 0; i < samples.size(); ++i)
+    {
+        // Show progress
+        overallCloudCounter++;
+        if(overallCloudCounter % (numClouds / 10) == 0) {
+            ROS_INFO("%d %% of feature computations done...", int(overallCloudCounter / (float)numClouds * 100.0f + 0.5f));
+        }
 
         // Everything good! Now store meta data and name of input cloud (for dump of results later on)
-        cloudInfos.push_back(cloudInfo);
-        cloudFilenames.push_back(cloudFilename);
+
 
         // Store label
-        labels.at<int>(goodCloudCounter) = label;
-        labelSet.insert(label);
+        labels.at<int>(goodCloudCounter) = labels_vec[i];
+        labelSet.insert(labels_vec[i]);
         
         if(label > 0) g_numPositiveSamples++;
         else g_numNegativeSamples++;
 
+        // Load PCD file
+        if(pcl::io::loadPCDFile<PointType>(samples[i], *personCloud) == -1)
+        {
+            ROS_FATAL("Couldn't read file %s\n", cloudFilename.c_str());
+            continue;
+        }
+        
         // Scale point cloud in z direction (height)
         scaleAndCropCloudToTargetSize(personCloud, g_scaleZto, g_cropZmin, g_cropZmax);
 
@@ -395,7 +412,7 @@ void calculateFeaturesOnDataset(int fold, bool useValidationSet, std::list<Tesse
                     for(size_t f = 0; f < volumeFeatureVector.size(); f++)  // for each feature...
                     {
                         features.at<float>(goodCloudCounter, featureColumn) = volumeFeatureVector[f];
-                        missingDataMask.at<unsigned char>(goodCloudCounter, featureColumn) = !std::isfinite(volumeFeatureVector[f]) ? 1 : 0;
+                        //missingDataMask.at<unsigned char>(goodCloudCounter, featureColumn) = !std::isfinite(volumeFeatureVector[f]) ? 1 : 0;
 
                         if(!featureVectorLookupInitialized) {
                             FeatureVectorLookupEntry entry;
@@ -423,7 +440,7 @@ void calculateFeaturesOnDataset(int fold, bool useValidationSet, std::list<Tesse
         ROS_ASSERT(overallVolumeLookup.size() == overallVolumeCount);
 
         // Mark sample as active
-        sampleIdx.at<unsigned char>(goodCloudCounter) = 1;
+        //sampleIdx.at<unsigned char>(goodCloudCounter) = 1;
 
         // Prepare for next sample
         goodCloudCounter++;
@@ -648,7 +665,7 @@ int main(int argc, char **argv)
 
     g_minPoints = 4; 
 
-    omp_set_num_threads(5);
+    omp_set_num_threads(20);
 
 
     //
@@ -962,7 +979,8 @@ int main(int argc, char **argv)
         ROS_INFO_STREAM("Number of weak classifiers: " << params.weak_count << ", weight trim rate: " << params.weight_trim_rate);
 
         currentResult.classifier = cv::Ptr<CvBoost>(new CvBoost);
-        if(!currentResult.classifier->train(features, CV_ROW_SAMPLE, labels, cv::Mat(), sampleIdx, cv::Mat(), missingDataMask, params)) {
+        //if(!currentResult.classifier->train(features, CV_ROW_SAMPLE, labels, cv::Mat(), sampleIdx, cv::Mat(), missingDataMask, params)) {
+        if(!currentResult.classifier->train(features, CV_ROW_SAMPLE, labels, cv::Mat(), cv::Mat(), cv::Mat(),  cv::Mat(), params)) {
             ROS_ERROR("Training of Adaboost classifier failed for unknown reason!");
         }
 
